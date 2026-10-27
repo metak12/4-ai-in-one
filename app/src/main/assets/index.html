@@ -1,1 +1,2110 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0b0e17" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>AIProjects — Единое Android-приложение (4 в 1)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            appbg: '#0b0e17',
+            cardbg: '#151928',
+            cardborder: '#232942',
+            iconbg: '#1e2738',
+            accent: '#7c6ff9',
+            linkblue: '#38bdf8',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #0b0e17;
+      color: #f1f5f9;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0b0e17;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #262d47;
+      border-radius: 9999px;
+    }
+    .project-card {
+      background: #151a29;
+      border: 1px solid #222940;
+      border-radius: 22px;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .project-card:hover {
+      border-color: #3b466e;
+      box-shadow: 0 10px 30px -10px rgba(124, 111, 249, 0.18);
+    }
+    .project-card:active {
+      transform: scale(0.99);
+    }
+    .tech-pill {
+      background: #1c2234;
+      border: 1px solid #2c3550;
+      color: #94a3b8;
+      border-radius: 9999px;
+      padding: 5px 14px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+    }
+    .icon-box {
+      width: 58px;
+      height: 58px;
+      border-radius: 16px;
+      background: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.06);
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    .ai-pulse {
+      animation: pulseGlow 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
 
+  <!-- Top Android App Bar -->
+  <header class="sticky top-0 z-30 bg-[#0b0e17]/95 backdrop-blur-md border-b border-[#1c2236]">
+    <div class="max-w-3xl mx-auto px-4 py-3.5 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-3">
+        <button id="btnBackHome" class="hidden w-9 h-9 rounded-xl bg-[#151a29] border border-[#252d47] items-center justify-center text-slate-300 hover:text-white hover:border-indigo-500/50 transition" title="Назад в AIProjects">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <button id="btnBrandLogo" class="text-left focus:outline-none group">
+          <div class="text-xl font-extrabold tracking-tight flex items-center">
+            <span class="text-white">AI</span><span class="text-[#7c6ff9] group-hover:text-indigo-400 transition">Projects</span>
+            <span id="headerModuleBadge" class="ml-2.5 hidden text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">Хаб</span>
+          </div>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="btnOpenAiSettings" class="px-2.5 py-1.5 rounded-xl bg-[#151a29] border border-[#252d47] hover:border-indigo-500/50 text-xs font-medium text-slate-300 flex items-center gap-1.5 transition">
+          <span id="aiStatusDot" class="w-2 h-2 rounded-full bg-emerald-400 ai-pulse"></span>
+          <span id="aiModeLabel">Smart AI</span>
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        </button>
+
+        <button id="btnOpenApkModal" class="px-3 py-1.5 rounded-xl bg-indigo-600/20 border border-indigo-500/40 hover:bg-indigo-600/30 text-xs font-semibold text-indigo-300 flex items-center gap-1.5 transition">
+          <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+          <span>APK</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-3xl w-full mx-auto px-4 pt-4 pb-28">
+
+    <!-- ==================== VIEW 0: HOME HUB (Matches Screenshots) ==================== -->
+    <section id="view-hub" class="space-y-5">
+      <div class="px-1">
+        <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+          Вот что уже собрано и запущено. Все 4 нейросетевых приложения объединены в единый Android-хаб — нажмите на любую карточку, чтобы открыть и протестировать проект.
+        </p>
+      </div>
+
+      <!-- Cards Grid matching screenshots 1:1 in style -->
+      <div class="space-y-4">
+
+        <!-- Card 1: Заметки Pro -->
+        <article class="project-card p-6 cursor-pointer" data-open-view="notes">
+          <div class="flex items-start justify-between gap-4">
+            <div class="icon-box" aria-hidden="true">📝</div>
+            <span class="text-xs font-medium px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" id="hubNotesCountBadge">4 заметки</span>
+          </div>
+          <h2 class="mt-5 text-xl font-bold text-white tracking-tight">Заметки Pro</h2>
+          <p class="mt-2.5 text-[#94a3b8] text-[15px] leading-relaxed">
+            Умный блокнот с автотегами, поиском по смыслу и генерацией summary заметок.
+          </p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <span class="tech-pill">ChatGPT</span>
+            <span class="tech-pill">Python</span>
+            <span class="tech-pill">SQLite</span>
+          </div>
+          <div class="mt-5">
+            <button type="button" class="text-[#38bdf8] hover:text-sky-300 font-semibold text-[15px] inline-flex items-center gap-1.5 group" data-open-view="notes">
+              <span>Открыть проект</span>
+              <span class="transform group-hover:translate-x-1 transition">→</span>
+            </button>
+          </div>
+        </article>
+
+        <!-- Card 2: Telegram-бот помощник -->
+        <article class="project-card p-6 cursor-pointer" data-open-view="bot">
+          <div class="flex items-start justify-between gap-4">
+            <div class="icon-box" aria-hidden="true">🤖</div>
+            <span class="text-xs font-medium px-2.5 py-1 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20" id="hubTasksCountBadge">3 задачи</span>
+          </div>
+          <h2 class="mt-5 text-xl font-bold text-white tracking-tight">Telegram-бот помощник</h2>
+          <p class="mt-2.5 text-[#94a3b8] text-[15px] leading-relaxed">
+            Бот-ассистент на базе LLM: отвечает на вопросы, напоминает о задачах и ведёт дневник.
+          </p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <span class="tech-pill">Telegram API</span>
+            <span class="tech-pill">GPT-4</span>
+            <span class="tech-pill">Python</span>
+          </div>
+          <div class="mt-5">
+            <button type="button" class="text-[#38bdf8] hover:text-sky-300 font-semibold text-[15px] inline-flex items-center gap-1.5 group" data-open-view="bot">
+              <span>Открыть проект</span>
+              <span class="transform group-hover:translate-x-1 transition">→</span>
+            </button>
+          </div>
+        </article>
+
+        <!-- Card 3: Кулинарный помощник -->
+        <article class="project-card p-6 cursor-pointer" data-open-view="chef">
+          <div class="flex items-start justify-between gap-4">
+            <div class="icon-box" aria-hidden="true">🍳</div>
+            <span class="text-xs font-medium px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20" id="hubPantryCountBadge">6 продуктов дома</span>
+          </div>
+          <h2 class="mt-5 text-xl font-bold text-white tracking-tight">Кулинарный помощник</h2>
+          <p class="mt-2.5 text-[#94a3b8] text-[15px] leading-relaxed">
+            Приложение, которое предлагает рецепты из продуктов, которые есть у тебя дома.
+          </p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <span class="tech-pill">GPT</span>
+            <span class="tech-pill">Flask</span>
+            <span class="tech-pill">PostgreSQL</span>
+          </div>
+          <div class="mt-5">
+            <button type="button" class="text-[#38bdf8] hover:text-sky-300 font-semibold text-[15px] inline-flex items-center gap-1.5 group" data-open-view="chef">
+              <span>Открыть проект</span>
+              <span class="transform group-hover:translate-x-1 transition">→</span>
+            </button>
+          </div>
+        </article>
+
+        <!-- Card 4: AI-подкаст студия -->
+        <article class="project-card p-6 cursor-pointer" data-open-view="podcast">
+          <div class="flex items-start justify-between gap-4">
+            <div class="icon-box" aria-hidden="true">🎧</div>
+            <span class="text-xs font-medium px-2.5 py-1 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">TTS + Аудио</span>
+          </div>
+          <h2 class="mt-5 text-xl font-bold text-white tracking-tight">AI-подкаст студия</h2>
+          <p class="mt-2.5 text-[#94a3b8] text-[15px] leading-relaxed">
+            Сервис, который превращает статьи в аудио-подкасты с озвучкой нейросетью.
+          </p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <span class="tech-pill">TTS</span>
+            <span class="tech-pill">Whisper</span>
+            <span class="tech-pill">FastAPI</span>
+          </div>
+          <div class="mt-5">
+            <button type="button" class="text-[#38bdf8] hover:text-sky-300 font-semibold text-[15px] inline-flex items-center gap-1.5 group" data-open-view="podcast">
+              <span>Открыть проект</span>
+              <span class="transform group-hover:translate-x-1 transition">→</span>
+            </button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 1: ЗАМЕТКИ PRO ==================== -->
+    <section id="view-notes" class="hidden space-y-5">
+      <div class="project-card p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="icon-box !w-12 !h-12 !text-2xl">📝</div>
+            <div>
+              <h1 class="text-lg font-bold text-white">Заметки Pro</h1>
+              <p class="text-xs text-slate-400">Автотеги • Семантический поиск • AI Summary • SQLite</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btnExportSqlite" class="px-3 py-2 rounded-xl bg-[#1c2234] hover:bg-[#252d45] border border-[#2c3550] text-xs font-medium text-slate-300 transition">
+              Экспорт SQL
+            </button>
+            <button id="btnNewNoteToggle" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition flex items-center gap-1.5">
+              <span>+ Новая заметка</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Semantic Search Bar -->
+        <div class="mt-4 relative">
+          <input id="notesSearchInput" type="text" placeholder="Умный поиск по смыслу (например: «деньги», «нейросети», «расписание», «здоровье»)..."
+            class="w-full bg-[#0e121e] border border-[#262f4a] focus:border-indigo-500 rounded-xl pl-10 pr-24 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none transition" />
+          <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <span id="semanticSearchBadge" class="hidden absolute right-2.5 top-2 text-[11px] px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+            По смыслу
+          </span>
+        </div>
+
+        <!-- Tag Filter Row -->
+        <div id="notesTagFilters" class="mt-3 flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1"></div>
+      </div>
+
+      <!-- Create / Edit Note Composer -->
+      <div id="noteComposerCard" class="hidden project-card p-5 space-y-3 border-indigo-500/40">
+        <div class="flex items-center justify-between">
+          <h3 id="noteComposerTitle" class="text-sm font-bold text-indigo-300">Создание умной заметки</h3>
+          <button id="btnCloseNoteComposer" class="text-xs text-slate-400 hover:text-white">Закрыть ✕</button>
+        </div>
+        <input id="noteTitleInput" type="text" placeholder="Заголовок заметки..."
+          class="w-full bg-[#0e121e] border border-[#262f4a] focus:border-indigo-500 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-white placeholder-slate-500 focus:outline-none" />
+        <textarea id="noteContentInput" rows="4" placeholder="Введите или вставьте текст заметки, конспект лекции или список идей..."
+          class="w-full bg-[#0e121e] border border-[#262f4a] focus:border-indigo-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none"></textarea>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <button id="btnGenerateAutoTags" type="button" class="px-3 py-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-xs font-medium text-sky-300 transition">
+              🏷️ Автотеги ИИ
+            </button>
+            <button id="btnGenerateNoteSummaryDraft" type="button" class="px-3 py-1.5 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-xs font-medium text-purple-300 transition">
+              ✨ Сделать Summary
+            </button>
+          </div>
+          <button id="btnSaveNote" type="button" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white transition">
+            Сохранить в БД
+          </button>
+        </div>
+
+        <div id="draftTagsPreview" class="flex flex-wrap gap-1.5 pt-1"></div>
+        <div id="draftSummaryPreview" class="hidden p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/30 text-xs text-indigo-200 leading-relaxed"></div>
+      </div>
+
+      <!-- Notes List -->
+      <div id="notesListContainer" class="space-y-3.5"></div>
+    </section>
+
+    <!-- ==================== VIEW 2: TELEGRAM-БОТ ПОМОЩНИК ==================== -->
+    <section id="view-bot" class="hidden space-y-4">
+      <div class="project-card p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="icon-box !w-12 !h-12 !text-2xl">🤖</div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h1 class="text-lg font-bold text-white">Telegram-бот помощник</h1>
+                <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">online</span>
+              </div>
+              <p class="text-xs text-slate-400">@AIProjects_AssistantBot • Чат GPT-4, Напоминания и Личный дневник</p>
+            </div>
+          </div>
+
+          <!-- Sub-navigation inside Bot -->
+          <div class="flex rounded-xl bg-[#0e121e] p-1 border border-[#232a42]">
+            <button type="button" class="bot-subtab px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition" data-bot-tab="chat">
+              💬 Чат
+            </button>
+            <button type="button" class="bot-subtab px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition" data-bot-tab="tasks">
+              ⏰ Задачи (<span id="botTabTaskCount">3</span>)
+            </button>
+            <button type="button" class="bot-subtab px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition" data-bot-tab="diary">
+              📔 Дневник (<span id="botTabDiaryCount">2</span>)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subview 2A: Bot Chat -->
+      <div id="bot-subview-chat" class="project-card flex flex-col h-[500px] overflow-hidden">
+        <!-- Quick Slash Commands Bar -->
+        <div class="px-4 py-2.5 bg-[#101422] border-b border-[#222940] flex items-center gap-2 overflow-x-auto custom-scrollbar">
+          <span class="text-[11px] text-slate-500 shrink-0">Команды:</span>
+          <button type="button" class="bot-cmd-chip text-xs px-2.5 py-1 rounded-lg bg-[#1a2136] hover:bg-indigo-600/30 text-sky-400 border border-[#2b3554] shrink-0 transition" data-cmd="/plan Спланируй продуктивный день разработчика">/plan День</button>
+          <button type="button" class="bot-cmd-chip text-xs px-2.5 py-1 rounded-lg bg-[#1a2136] hover:bg-indigo-600/30 text-sky-400 border border-[#2b3554] shrink-0 transition" data-cmd="/remind Завтра в 10:00 созвон по проекту AIProjects">/remind Задача</button>
+          <button type="button" class="bot-cmd-chip text-xs px-2.5 py-1 rounded-lg bg-[#1a2136] hover:bg-indigo-600/30 text-sky-400 border border-[#2b3554] shrink-0 transition" data-cmd="/diary Сегодня собрал 4 AI-приложения в единый Android-хаб!">/diary Запись</button>
+          <button type="button" class="bot-cmd-chip text-xs px-2.5 py-1 rounded-lg bg-[#1a2136] hover:bg-indigo-600/30 text-sky-400 border border-[#2b3554] shrink-0 transition" data-cmd="/summary Сводка по моим задачам и дневнику">/summary Сводка</button>
+        </div>
+
+        <!-- Messages Feed -->
+        <div id="botChatMessages" class="flex-1 p-4 space-y-3 overflow-y-auto custom-scrollbar"></div>
+
+        <!-- Chat Input -->
+        <form id="botChatForm" class="p-3 bg-[#101422] border-t border-[#222940] flex items-center gap-2">
+          <input id="botChatInput" type="text" placeholder="Спросите о чём угодно или напишите «Напомни...» / «В дневник:...»"
+            class="flex-1 bg-[#161c2e] border border-[#283250] focus:border-indigo-500 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none" />
+          <button type="submit" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition shrink-0">
+            Отправить
+          </button>
+        </form>
+      </div>
+
+      <!-- Subview 2B: Bot Tasks & Reminders -->
+      <div id="bot-subview-tasks" class="hidden project-card p-5 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-bold text-white">⏰ Напоминания и задачи</h3>
+          <span class="text-xs text-slate-400">Синхронизировано с чатом бота</span>
+        </div>
+
+        <form id="botAddTaskForm" class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+          <input id="botTaskTitleInput" type="text" placeholder="Что нужно сделать?"
+            class="sm:col-span-6 bg-[#0e121e] border border-[#262f4a] rounded-xl px-3.5 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
+          <input id="botTaskTimeInput" type="text" placeholder="Когда? (напр. Сегодня 18:00)"
+            class="sm:col-span-4 bg-[#0e121e] border border-[#262f4a] rounded-xl px-3.5 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
+          <button type="submit" class="sm:col-span-2 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition">
+            + Добавить
+          </button>
+        </form>
+
+        <div id="botTasksList" class="space-y-2.5"></div>
+      </div>
+
+      <!-- Subview 2C: Bot Diary -->
+      <div id="bot-subview-diary" class="hidden project-card p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-base font-bold text-white">📔 Умный дневник с AI-рефлексией</h3>
+          <button id="btnAiAnalyzeDiary" type="button" class="px-3 py-1.5 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-xs font-medium text-purple-300 transition">
+            ✨ AI-анализ настроения
+          </button>
+        </div>
+
+        <div id="diaryAiInsightBox" class="hidden p-3.5 rounded-xl bg-indigo-950/40 border border-indigo-500/30 text-xs text-indigo-200 leading-relaxed"></div>
+
+        <form id="botAddDiaryForm" class="space-y-2.5">
+          <div class="flex items-center gap-2 overflow-x-auto pb-1">
+            <span class="text-xs text-slate-400">Настроение:</span>
+            <button type="button" class="mood-btn px-2.5 py-1 rounded-lg text-xs border border-indigo-500 bg-indigo-600/20 text-white" data-mood="🚀 Продуктивно">🚀 Продуктивно</button>
+            <button type="button" class="mood-btn px-2.5 py-1 rounded-lg text-xs border border-[#262f4a] bg-[#0e121e] text-slate-400" data-mood="😊 Отлично">😊 Отлично</button>
+            <button type="button" class="mood-btn px-2.5 py-1 rounded-lg text-xs border border-[#262f4a] bg-[#0e121e] text-slate-400" data-mood="😌 Спокойно">😌 Спокойно</button>
+            <button type="button" class="mood-btn px-2.5 py-1 rounded-lg text-xs border border-[#262f4a] bg-[#0e121e] text-slate-400" data-mood="🤔 Задумчиво">🤔 Задумчиво</button>
+          </div>
+          <div class="flex gap-2">
+            <input id="botDiaryInput" type="text" placeholder="Запишите главную мысль или итог дня..."
+              class="flex-1 bg-[#0e121e] border border-[#262f4a] rounded-xl px-3.5 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
+            <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white transition shrink-0">
+              Записать
+            </button>
+          </div>
+        </form>
+
+        <div id="botDiaryList" class="space-y-2.5"></div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 3: КУЛИНАРНЫЙ ПОМОЩНИК ==================== -->
+    <section id="view-chef" class="hidden space-y-5">
+      <div class="project-card p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="icon-box !w-12 !h-12 !text-2xl">🍳</div>
+            <div>
+              <h1 class="text-lg font-bold text-white">Кулинарный помощник</h1>
+              <p class="text-xs text-slate-400">Рецепты из того, что есть дома • КБЖУ • AI Шеф-генератор</p>
+            </div>
+          </div>
+          <button id="btnGenerateCustomAiRecipe" type="button" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-xs font-bold text-slate-950 transition shadow-lg shadow-amber-500/10">
+            ✨ Сгенерировать AI-рецепт
+          </button>
+        </div>
+
+        <!-- Add Ingredient Input -->
+        <form id="chefAddIngredientForm" class="flex gap-2">
+          <input id="chefIngredientInput" type="text" placeholder="Добавьте продукт (например: брокколи, бекон, гречка)..."
+            class="flex-1 bg-[#0e121e] border border-[#262f4a] focus:border-amber-500 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none" />
+          <button type="submit" class="px-4 py-2.5 rounded-xl bg-[#1e263d] hover:bg-[#283352] border border-[#323f63] text-xs font-semibold text-white transition shrink-0">
+            + В холодильник
+          </button>
+        </form>
+
+        <!-- Quick Pantry Chips -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-medium text-slate-400">Отметьте продукты, которые есть у вас дома:</span>
+            <button id="btnClearPantry" type="button" class="text-xs text-slate-500 hover:text-rose-400 transition">Очистить всё</button>
+          </div>
+          <div id="chefPantryChips" class="flex flex-wrap gap-1.5"></div>
+        </div>
+
+        <!-- Filters -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#222940]">
+          <div class="flex items-center gap-1.5 overflow-x-auto">
+            <button type="button" class="chef-filter-btn px-3 py-1 rounded-lg text-xs font-medium bg-indigo-600 text-white" data-chef-filter="all">Все блюда</button>
+            <button type="button" class="chef-filter-btn px-3 py-1 rounded-lg text-xs font-medium bg-[#0e121e] text-slate-400 border border-[#262f4a]" data-chef-filter="fast">⚡ До 20 мин</button>
+            <button type="button" class="chef-filter-btn px-3 py-1 rounded-lg text-xs font-medium bg-[#0e121e] text-slate-400 border border-[#262f4a]" data-chef-filter="highprotein">💪 Много белка</button>
+          </div>
+          <span id="chefMatchSummary" class="text-xs text-amber-400 font-medium">Найдено 6 рецептов</span>
+        </div>
+      </div>
+
+      <!-- AI Custom Generated Recipe Box -->
+      <div id="chefAiCustomRecipeBox" class="hidden project-card p-5 border-amber-500/40 space-y-3"></div>
+
+      <!-- Recipe Cards List -->
+      <div id="chefRecipesContainer" class="space-y-4"></div>
+    </section>
+
+    <!-- ==================== VIEW 4: AI-ПОДКАСТ СТУДИЯ ==================== -->
+    <section id="view-podcast" class="hidden space-y-5">
+      <div class="project-card p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="icon-box !w-12 !h-12 !text-2xl">🎧</div>
+            <div>
+              <h1 class="text-lg font-bold text-white">AI-подкаст студия</h1>
+              <p class="text-xs text-slate-400">Генерация диалога ведущих из статьи • Neural TTS • Экспорт WAV</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button type="button" class="podcast-preset-btn px-2.5 py-1.5 rounded-lg bg-[#1c2234] hover:bg-[#262f47] border border-[#2c3550] text-xs text-slate-300 transition" data-preset="ai">Статья: ИИ-агенты</button>
+            <button type="button" class="podcast-preset-btn px-2.5 py-1.5 rounded-lg bg-[#1c2234] hover:bg-[#262f47] border border-[#2c3550] text-xs text-slate-300 transition" data-preset="sleep">Статья: Нейробиология сна</button>
+          </div>
+        </div>
+
+        <div class="space-y-2.5">
+          <input id="podcastTitleInput" type="text" value="Как ИИ-агенты меняют разработку и повседневную жизнь"
+            placeholder="Тема или заголовок статьи..."
+            class="w-full bg-[#0e121e] border border-[#262f4a] focus:border-purple-500 rounded-xl px-3.5 py-2.5 text-sm font-semibold text-white placeholder-slate-500 focus:outline-none" />
+          <textarea id="podcastArticleInput" rows="4" placeholder="Вставьте текст статьи, новости или заметки, чтобы превратить её в живой подкаст двух ведущих..."
+            class="w-full bg-[#0e121e] border border-[#262f4a] focus:border-purple-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none">Автономные ИИ-агенты переходят от простых текстовых ответов к выполнению многошаговых задач: они умеют планировать действия, писать код, анализировать базы данных и помогать человеку в быту — от умных заметок со смысловым поиском до подбора кулинарных рецептов и генерации аудиоконтента. Главный тренд — гибридная архитектура, сочетающая быстрые локальные модели на смартфоне и облачные LLM.</textarea>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <label class="text-xs text-slate-400">Формат:</label>
+            <select id="podcastStyleSelect" class="bg-[#0e121e] border border-[#262f4a] rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none">
+              <option value="duo">Два ведущих (Алексей и Мария)</option>
+              <option value="solo">Соло-разбор (Экспертный дайджест)</option>
+            </select>
+          </div>
+
+          <button id="btnGeneratePodcastScript" type="button" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-xs font-semibold text-white transition flex items-center gap-1.5">
+            <span>🎙️ Сгенерировать выпуск подкаста</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Audio Player & Waveform Studio -->
+      <div class="project-card p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span class="text-[11px] uppercase tracking-wider font-semibold text-purple-400">Студийный плеер • Neural TTS + WebAudio</span>
+            <h3 id="podcastEpisodeTitle" class="text-base font-bold text-white mt-0.5">Выпуск #1: Как ИИ-агенты меняют разработку и повседневную жизнь</h3>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btnDownloadPodcastWav" type="button" class="px-3 py-1.5 rounded-xl bg-[#1c2234] hover:bg-[#262f47] border border-[#2c3550] text-xs font-medium text-sky-300 transition">
+              ⬇ Скачать .WAV
+            </button>
+          </div>
+        </div>
+
+        <!-- Live Audio Visualizer Canvas -->
+        <div class="relative h-24 rounded-xl bg-[#0a0d16] border border-[#212840] overflow-hidden flex items-center justify-center">
+          <canvas id="podcastWaveformCanvas" class="w-full h-full"></canvas>
+          <div id="podcastNowSpeakingBadge" class="absolute left-3 top-2.5 px-2.5 py-1 rounded-lg bg-[#151a29]/90 border border-[#2b3452] text-[11px] text-slate-300">
+            Готов к воспроизведению
+          </div>
+          <div id="podcastTimerBadge" class="absolute right-3 top-2.5 font-mono text-xs text-purple-300">
+            00:00
+          </div>
+        </div>
+
+        <!-- Transport Controls -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <button id="btnPodcastPlayPause" type="button" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-2 transition">
+              <span id="podcastPlayIcon">▶</span>
+              <span id="podcastPlayLabel">Озвучить подкаст</span>
+            </button>
+            <button id="btnPodcastStop" type="button" class="px-3 py-2.5 rounded-xl bg-[#1c2234] hover:bg-[#262f47] border border-[#2c3550] text-xs font-semibold text-slate-300 transition">
+              ⏹ Стоп
+            </button>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <label class="text-xs text-slate-400 flex items-center gap-1.5">
+              <span>Скорость:</span>
+              <select id="podcastSpeedSelect" class="bg-[#0e121e] border border-[#262f4a] rounded-lg px-2 py-1 text-xs text-white">
+                <option value="0.9">0.9x</option>
+                <option value="1.0" selected>1.0x</option>
+                <option value="1.15">1.15x</option>
+                <option value="1.3">1.3x</option>
+              </select>
+            </label>
+            <label class="text-xs text-slate-400 flex items-center gap-1.5 cursor-pointer">
+              <input id="podcastJingleToggle" type="checkbox" checked class="rounded bg-[#0e121e] border-[#262f4a] text-indigo-600" />
+              <span>Фоновый синт</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Dialogue Transcript List -->
+        <div id="podcastTranscriptContainer" class="space-y-2.5 pt-2 max-h-80 overflow-y-auto custom-scrollbar"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Android Navigation Bar -->
+  <nav class="fixed bottom-0 left-0 right-0 z-30 bg-[#0d111c]/95 backdrop-blur-md border-t border-[#1e253a]">
+    <div class="max-w-3xl mx-auto px-2 py-1.5 grid grid-cols-5 gap-1">
+      <button type="button" class="bottom-nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-indigo-400 font-semibold transition" data-nav="hub">
+        <span class="text-lg leading-none">🏠</span>
+        <span class="text-[11px] mt-1">AIProjects</span>
+      </button>
+      <button type="button" class="bottom-nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition" data-nav="notes">
+        <span class="text-lg leading-none">📝</span>
+        <span class="text-[11px] mt-1">Заметки</span>
+      </button>
+      <button type="button" class="bottom-nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition" data-nav="bot">
+        <span class="text-lg leading-none">🤖</span>
+        <span class="text-[11px] mt-1">Бот</span>
+      </button>
+      <button type="button" class="bottom-nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition" data-nav="chef">
+        <span class="text-lg leading-none">🍳</span>
+        <span class="text-[11px] mt-1">Кулинария</span>
+      </button>
+      <button type="button" class="bottom-nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition" data-nav="podcast">
+        <span class="text-lg leading-none">🎧</span>
+        <span class="text-[11px] mt-1">Подкасты</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ==================== MODAL 1: AI ENGINE SETTINGS ==================== -->
+  <div id="modalAiSettings" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="project-card max-w-md w-full p-6 space-y-4 border-indigo-500/40">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-white">⚙️ Настройки ИИ-движка</h3>
+        <button id="btnCloseAiSettings" type="button" class="text-slate-400 hover:text-white text-sm">✕</button>
+      </div>
+      <p class="text-xs text-slate-400 leading-relaxed">
+        По умолчанию приложение работает на встроенном автономном движке <strong>Smart Local AI</strong> (не требует ключей и интернета). При желании вы можете подключить реальный API-ключ OpenAI / DeepSeek / OpenRouter.
+      </p>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">API Endpoint (OpenAI-совместимый)</label>
+          <input id="settingApiUrl" type="text" value="https://api.openai.com/v1/chat/completions"
+            class="w-full bg-[#0e121e] border border-[#262f4a] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">API-ключ (оставьте пустым для встроенного ИИ)</label>
+          <input id="settingApiKey" type="password" placeholder="sk-..."
+            class="w-full bg-[#0e121e] border border-[#262f4a] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Модель</label>
+          <input id="settingApiModel" type="text" value="gpt-4o-mini"
+            class="w-full bg-[#0e121e] border border-[#262f4a] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" />
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button id="btnSaveAiSettings" type="button" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition">
+          Сохранить настройки
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL 2: ANDROID APK INFO ==================== -->
+  <div id="modalApkInfo" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="project-card max-w-lg w-full p-6 space-y-4 border-indigo-500/40 max-h-[85vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-white">📱 Установка на Android и сборка APK</h3>
+        <button id="btnCloseApkModal" type="button" class="text-slate-400 hover:text-white text-sm">✕</button>
+      </div>
+      <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+        <div class="p-3.5 rounded-xl bg-[#0e121e] border border-[#262f4a]">
+          <div class="font-bold text-indigo-300 mb-1">1. Готовый Android Studio проект в архиве (.zip)</div>
+          <p class="text-slate-400">
+            К ответу прикреплён архив <code>AIProjects_Android_Project.zip</code> с нативным Kotlin WebView-контейнером (<code>MainActivity.kt</code>), манифестом, адаптивной иконкой и встроенным <code>assets/index.html</code>.
+          </p>
+        </div>
+        <div class="p-3.5 rounded-xl bg-[#0e121e] border border-[#262f4a]">
+          <div class="font-bold text-emerald-300 mb-1">2. Автосборка APK в облаке без установки программ (GitHub Actions)</div>
+          <p class="text-slate-400">
+            Внутри архива уже настроен файл <code>.github/workflows/build-apk.yml</code>. Загрузите проект в любой репозиторий GitHub — облачный сборщик автоматически скомпилирует готовый <code>app-debug.apk</code> во вкладке <strong>Actions → Artifacts</strong> за 2 минуты.
+          </p>
+        </div>
+        <div class="p-3.5 rounded-xl bg-[#0e121e] border border-[#262f4a]">
+          <div class="font-bold text-sky-300 mb-1">3. Мгновенная установка как PWA на смартфон</div>
+          <p class="text-slate-400">
+            Откройте этот HTML-файл в Chrome на Android и нажмите <strong>«Добавить на главный экран»</strong> — приложение установится на рабочий стол телефона в полноэкранном режиме.
+          </p>
+        </div>
+      </div>
+      <div class="flex justify-end">
+        <button id="btnDismissApkModal" type="button" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition">
+          Понятно
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="appToast" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2.5 rounded-xl bg-[#1e263d] border border-indigo-500/40 text-xs font-medium text-white shadow-xl"></div>
+
+  <script>
+    // ==================== SAFE STORAGE & STATE ====================
+    function loadState(key, fallback) {
+      try {
+        const raw = localStorage.getItem('aiprojects_' + key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function saveState(key, value) {
+      try {
+        localStorage.setItem('aiprojects_' + key, JSON.stringify(value));
+      } catch (e) {
+        // Ignore storage quota errors in sandboxed iframes
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('appToast');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.remove('hidden');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2800);
+    }
+
+    // ==================== HYBRID AI ENGINE ====================
+    const aiConfig = loadState('ai_config', {
+      apiUrl: 'https://api.openai.com/v1/chat/completions',
+      apiKey: '',
+      model: 'gpt-4o-mini'
+    });
+
+    function updateAiHeaderBadge() {
+      const label = document.getElementById('aiModeLabel');
+      const dot = document.getElementById('aiStatusDot');
+      if (aiConfig.apiKey && aiConfig.apiKey.trim().length > 5) {
+        label.textContent = 'Cloud LLM';
+        dot.className = 'w-2 h-2 rounded-full bg-sky-400 ai-pulse';
+      } else {
+        label.textContent = 'Smart AI';
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-400 ai-pulse';
+      }
+    }
+
+    async function callHybridAI(systemPrompt, userPrompt, localFallbackFn) {
+      if (aiConfig.apiKey && aiConfig.apiKey.trim().length > 5) {
+        try {
+          const res = await fetch(aiConfig.apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + aiConfig.apiKey.trim()
+            },
+            body: JSON.stringify({
+              model: aiConfig.model || 'gpt-4o-mini',
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt }
+              ],
+              temperature: 0.7
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const reply = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+            if (reply) return reply.trim();
+          }
+        } catch (err) {
+          // Fall back cleanly to built-in Smart AI
+        }
+      }
+      return localFallbackFn();
+    }
+
+    // ==================== NAVIGATION CONTROLLER ====================
+    const views = ['hub', 'notes', 'bot', 'chef', 'podcast'];
+    const viewTitles = {
+      hub: 'Хаб',
+      notes: 'Заметки Pro',
+      bot: 'Telegram-бот',
+      chef: 'Кулинария',
+      podcast: 'Подкаст студия'
+    };
+
+    function switchView(targetView) {
+      if (!views.includes(targetView)) targetView = 'hub';
+      views.forEach(v => {
+        const el = document.getElementById('view-' + v);
+        if (el) {
+          if (v === targetView) el.classList.remove('hidden');
+          else el.classList.add('hidden');
+        }
+      });
+
+      const backBtn = document.getElementById('btnBackHome');
+      const badge = document.getElementById('headerModuleBadge');
+      if (targetView === 'hub') {
+        backBtn.classList.add('hidden');
+        backBtn.classList.remove('flex');
+        badge.classList.add('hidden');
+      } else {
+        backBtn.classList.remove('hidden');
+        backBtn.classList.add('flex');
+        badge.textContent = viewTitles[targetView];
+        badge.classList.remove('hidden');
+      }
+
+      document.querySelectorAll('.bottom-nav-btn').forEach(btn => {
+        const nav = btn.getAttribute('data-nav');
+        if (nav === targetView) {
+          btn.className = 'bottom-nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-indigo-400 font-semibold bg-indigo-500/10 transition';
+        } else {
+          btn.className = 'bottom-nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition';
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      updateHubCounters();
+    }
+
+    // ==================== MODULE 1: ЗАМЕТКИ PRO ====================
+    const semanticClusters = {
+      'ии': ['нейросеть', 'gpt', 'llm', 'модель', 'промпт', 'ml', ' генерация', 'чатбот', 'whisper', 'tts', 'ai'],
+      'разработка': ['код', 'python', 'sqlite', 'flask', 'fastapi', 'api', 'сервер', 'база', 'android', 'apk', 'git', 'программа'],
+      'финансы': ['деньги', 'бюджет', 'расходы', 'доход', 'оплата', 'подписка', 'инвестиции', 'цена', 'рубли', 'зарплата'],
+      'учёба': ['лекция', 'экзамен', 'конспект', 'курс', 'книга', 'исследование', 'статья', 'обучение', 'тест'],
+      'работа': ['встреча', 'созвон', 'дедлайн', 'проект', 'клиент', 'задача', 'отчёт', 'релиз', 'команда'],
+      'здоровье': ['сон', 'спорт', 'тренировка', 'питание', 'калории', 'белок', 'режим', 'отдых']
+    };
+
+    const defaultNotes = [
+      {
+        id: 'n1',
+        title: 'Архитектура единого Android-приложения AIProjects',
+        content: 'Объединить четыре сервиса (Заметки Pro, Telegram-бот помощник, Кулинарный помощник и AI-подкаст студия) в единый мобильный интерфейс. Для хранения заметок используется локальная база данных и SQL-экспорт, а для генерации выжимок — гибридный LLM-модуль.',
+        tags: ['#разработка', '#ии', '#android'],
+        summary: 'Единое мобильное приложение объединяет 4 AI-инструмента с локальной БД и гибридным LLM-движком.',
+        date: '28 окт 2026'
+      },
+      {
+        id: 'n2',
+        title: 'Идеи по оптимизации бюджета и подписок на облачные API',
+        content: 'Чтобы снизить расходы на платные токены GPT-4, можно кэшировать частые запросы в SQLite и использовать локальные алгоритмы автотегов и суммаризации текста для коротких заметок. Экономия бюджета составит до 70% в месяц.',
+        tags: ['#финансы', '#ии', '#оптимизация'],
+        summary: 'Кэширование запросов в SQLite и локальная обработка текста сокращают расходы на API до 70%.',
+        date: '27 окт 2026'
+      },
+      {
+        id: 'n3',
+        title: 'Конспект по нейробиологии сна и продуктивности',
+        content: 'Глубокая фаза сна критически важна для консолидации памяти после обучения и программирования. Отказ от синего света экранов за 60 минут до сна и проветривание спальни повышают концентрацию внимания на следующий день.',
+        tags: ['#здоровье', '#учёба', '#продуктивность'],
+        summary: 'Глубокий сон и гигиена отдыха напрямую укрепляют память и когнитивную продуктивность.',
+        date: '25 окт 2026'
+      },
+      {
+        id: 'n4',
+        title: 'План релиза и презентации портфолио проектов',
+        content: 'Подготовить демонстрацию работы семантического поиска по смыслу, показать генерацию рецептов по продуктам из холодильника и живую озвучку подкаста двумя голосами. Проверить сборку APK через GitHub Actions.',
+        tags: ['#работа', '#разработка', '#релиз'],
+        summary: 'Чек-лист демонстрации 4 модулей AIProjects и проверка автоматической сборки APK.',
+        date: '24 окт 2026'
+      }
+    ];
+
+    let notesState = loadState('notes', defaultNotes);
+    let activeNoteTagFilter = 'Все';
+    let draftAutoTags = [];
+
+    function extractAutoTags(title, content) {
+      const text = (title + ' ' + content).toLowerCase();
+      const found = [];
+      Object.entries(semanticClusters).forEach(([tag, keywords]) => {
+        if (text.includes(tag) || keywords.some(k => text.includes(k))) {
+          found.push('#' + tag);
+        }
+      });
+      if (found.length === 0) {
+        const words = text.replace(/[^а-яёa-z0-9\s]/gi, '').split(/\s+/).filter(w => w.length > 4);
+        if (words[0]) found.push('#' + words[0].slice(0, 10));
+        found.push('#заметка');
+      }
+      return Array.from(new Set(found)).slice(0, 4);
+    }
+
+    function generateLocalSummary(title, content) {
+      const clean = content.trim();
+      if (!clean) return 'Добавьте текст заметки для генерации краткой выжимки.';
+      const sentences = clean.split(/(?<=[.!?])\s+/).filter(Boolean);
+      if (sentences.length <= 1) {
+        return 'Краткая суть: ' + clean.slice(0, 140) + (clean.length > 140 ? '…' : '');
+      }
+      const first = sentences[0];
+      const last = sentences[sentences.length - 1];
+      return `Главная мысль: ${first} Итог: ${last}`;
+    }
+
+    function semanticMatchesNote(note, rawQuery) {
+      if (!rawQuery) return { matched: true, semanticReason: null };
+      const q = rawQuery.toLowerCase().trim();
+      const hay = (note.title + ' ' + note.content + ' ' + note.tags.join(' ') + ' ' + (note.summary || '')).toLowerCase();
+      if (hay.includes(q)) return { matched: true, semanticReason: null };
+
+      // Check semantic expansion
+      for (const [clusterName, synonyms] of Object.entries(semanticClusters)) {
+        const allTerms = [clusterName, ...synonyms];
+        const queryHitsCluster = allTerms.some(term => q.includes(term) || term.includes(q));
+        if (queryHitsCluster) {
+          const noteHitsCluster = allTerms.some(term => hay.includes(term));
+          if (noteHitsCluster) {
+            return { matched: true, semanticReason: `Смысловая связь: «${clusterName}»` };
+          }
+        }
+      }
+      return { matched: false, semanticReason: null };
+    }
+
+    function renderNotesTagFilters() {
+      const container = document.getElementById('notesTagFilters');
+      if (!container) return;
+      const allTags = ['Все'];
+      notesState.forEach(n => {
+        (n.tags || []).forEach(t => {
+          if (!allTags.includes(t)) allTags.push(t);
+        });
+      });
+
+      container.innerHTML = allTags.map(tag => {
+        const active = tag === activeNoteTagFilter;
+        return `<button type="button" data-note-tag="${tag}" class="note-tag-filter-btn shrink-0 px-3 py-1 rounded-full text-xs font-medium transition ${
+          active
+            ? 'bg-indigo-600 text-white'
+            : 'bg-[#181f33] text-slate-400 hover:text-white border border-[#283250]'
+        }">${tag}</button>`;
+      }).join('');
+
+      container.querySelectorAll('.note-tag-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeNoteTagFilter = btn.getAttribute('data-note-tag');
+          renderNotesTagFilters();
+          renderNotesList();
+        });
+      });
+    }
+
+    function renderNotesList() {
+      const container = document.getElementById('notesListContainer');
+      const searchInput = document.getElementById('notesSearchInput');
+      const semanticBadge = document.getElementById('semanticSearchBadge');
+      if (!container) return;
+
+      const query = searchInput ? searchInput.value.trim() : '';
+      let usedSemantic = false;
+
+      const filtered = notesState
+        .map(note => {
+          const tagOk = activeNoteTagFilter === 'Все' || (note.tags && note.tags.includes(activeNoteTagFilter));
+          if (!tagOk) return null;
+          const sem = semanticMatchesNote(note, query);
+          if (!sem.matched) return null;
+          if (sem.semanticReason) usedSemantic = true;
+          return { note, semanticReason: sem.semanticReason };
+        })
+        .filter(Boolean);
+
+      if (semanticBadge) {
+        if (query && usedSemantic) semanticBadge.classList.remove('hidden');
+        else semanticBadge.classList.add('hidden');
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="project-card p-8 text-center space-y-2">
+            <div class="text-2xl">🔍</div>
+            <div class="text-sm font-semibold text-white">Заметки не найдены</div>
+            <p class="text-xs text-slate-400">Попробуйте другой поисковый запрос или сбросьте фильтр тегов.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(({ note, semanticReason }) => `
+        <article class="project-card p-5 space-y-3">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <h3 class="text-base font-bold text-white">${escapeHtml(note.title)}</h3>
+                ${semanticReason ? `<span class="text-[11px] px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">${escapeHtml(semanticReason)}</span>` : ''}
+              </div>
+              <span class="text-[11px] text-slate-500">${escapeHtml(note.date || 'Сегодня')}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" data-summarize-id="${note.id}" class="px-2.5 py-1 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-[11px] font-medium text-purple-300 transition">
+                ✨ Summary
+              </button>
+              <button type="button" data-delete-note="${note.id}" class="px-2 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs transition" title="Удалить">
+                ✕
+              </button>
+            </div>
+          </div>
+
+          <p class="text-sm text-slate-300 leading-relaxed">${escapeHtml(note.content)}</p>
+
+          ${note.summary ? `
+            <div class="p-3 rounded-xl bg-[#0e1322] border border-indigo-500/30 text-xs text-indigo-200 leading-relaxed">
+              <span class="font-bold text-indigo-400">AI Summary:</span> ${escapeHtml(note.summary)}
+            </div>
+          ` : ''}
+
+          <div class="flex flex-wrap gap-1.5 pt-1">
+            ${(note.tags || []).map(t => `<span class="tech-pill !py-1 !px-2.5 !text-xs !text-sky-300">${escapeHtml(t)}</span>`).join('')}
+          </div>
+        </article>
+      `).join('');
+
+      container.querySelectorAll('[data-summarize-id]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.getAttribute('data-summarize-id');
+          const target = notesState.find(n => n.id === id);
+          if (!target) return;
+          btn.textContent = '⏳ ИИ...';
+          const summary = await callHybridAI(
+            'Сделай краткую выжимку (summary) заметки в 1-2 предложениях на русском языке.',
+            target.title + '\n' + target.content,
+            () => generateLocalSummary(target.title, target.content)
+          );
+          target.summary = summary;
+          saveState('notes', notesState);
+          renderNotesList();
+          showToast('AI Summary для заметки обновлено');
+        });
+      });
+
+      container.querySelectorAll('[data-delete-note]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-delete-note');
+          notesState = notesState.filter(n => n.id !== id);
+          saveState('notes', notesState);
+          renderNotesTagFilters();
+          renderNotesList();
+          updateHubCounters();
+          showToast('Заметка удалена');
+        });
+      });
+    }
+
+    // ==================== MODULE 2: TELEGRAM-БОТ ПОМОЩНИК ====================
+    const defaultBotMessages = [
+      {
+        sender: 'bot',
+        text: 'Привет! Я твой AI-ассистент из проекта «Telegram-бот помощник». Я отвечаю на вопросы, помогаю планировать задачи (напиши «/remind ...» или «Напомни ...») и веду твой личный дневник («/diary ...»). Чем помочь?',
+        time: '00:36'
+      }
+    ];
+
+    const defaultTasks = [
+      { id: 't1', title: 'Протестировать модуль Заметки Pro и SQL-экспорт', time: 'Сегодня, 14:00', done: true },
+      { id: 't2', title: 'Собрать APK через Android Studio / GitHub Actions', time: 'Сегодня, 18:30', done: false },
+      { id: 't3', title: 'Подготовить презентацию витрины AIProjects', time: 'Завтра, 11:00', done: false }
+    ];
+
+    const defaultDiary = [
+      { id: 'd1', mood: '🚀 Продуктивно', text: 'Объединил 4 нейросетевых проекта в единое приложение. Особенно круто работает голосовой синтез подкастов и поиск заметок по смыслу.', date: '28 окт, 00:35' },
+      { id: 'd2', mood: '😊 Отлично', text: 'Разобрался с архитектурой LLM-ассистента и хранением состояния. Осталось упаковать всё в удобный APK.', date: '27 окт, 21:15' }
+    ];
+
+    let botMessages = loadState('bot_messages', defaultBotMessages);
+    let botTasks = loadState('bot_tasks', defaultTasks);
+    let botDiary = loadState('bot_diary', defaultDiary);
+    let selectedMood = '🚀 Продуктивно';
+
+    function renderBotChat() {
+      const feed = document.getElementById('botChatMessages');
+      if (!feed) return;
+      feed.innerHTML = botMessages.map(m => {
+        if (m.sender === 'user') {
+          return `
+            <div class="flex justify-end">
+              <div class="max-w-[82%] rounded-2xl rounded-br-sm bg-indigo-600 text-white px-4 py-2.5 text-sm leading-relaxed shadow">
+                <div>${escapeHtml(m.text)}</div>
+                <div class="text-[10px] text-indigo-200 text-right mt-1">${escapeHtml(m.time)}</div>
+              </div>
+            </div>
+          `;
+        }
+        return `
+          <div class="flex justify-start gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-[#1e293b] border border-[#2e3b59] flex items-center justify-center text-sm shrink-0">🤖</div>
+            <div class="max-w-[82%] rounded-2xl rounded-tl-sm bg-[#182034] border border-[#26314f] text-slate-100 px-4 py-2.5 text-sm leading-relaxed">
+              <div class="whitespace-pre-line">${escapeHtml(m.text)}</div>
+              <div class="text-[10px] text-slate-400 text-right mt-1">${escapeHtml(m.time)}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    function renderBotTasks() {
+      const list = document.getElementById('botTasksList');
+      const countEl = document.getElementById('botTabTaskCount');
+      const activeCount = botTasks.filter(t => !t.done).length;
+      if (countEl) countEl.textContent = String(activeCount);
+
+      if (!list) return;
+      if (botTasks.length === 0) {
+        list.innerHTML = `<div class="text-xs text-slate-400 py-4 text-center">Список задач пуст. Добавьте напоминание выше или через чат!</div>`;
+        return;
+      }
+
+      list.innerHTML = botTasks.map(t => `
+        <div class="flex items-center justify-between gap-3 p-3.5 rounded-xl bg-[#0e121e] border border-[#232b45]">
+          <label class="flex items-center gap-3 cursor-pointer flex-1">
+            <input type="checkbox" data-toggle-task="${t.id}" ${t.done ? 'checked' : ''} class="w-4 h-4 rounded bg-[#161c2e] border-slate-600 text-indigo-600" />
+            <div>
+              <div class="text-sm font-medium ${t.done ? 'line-through text-slate-500' : 'text-white'}">${escapeHtml(t.title)}</div>
+              <div class="text-[11px] text-sky-400">⏰ ${escapeHtml(t.time)}</div>
+            </div>
+          </label>
+          <button type="button" data-del-task="${t.id}" class="text-xs text-slate-500 hover:text-rose-400 px-2 py-1">✕</button>
+        </div>
+      `).join('');
+
+      list.querySelectorAll('[data-toggle-task]').forEach(chk => {
+        chk.addEventListener('change', () => {
+          const id = chk.getAttribute('data-toggle-task');
+          const task = botTasks.find(x => x.id === id);
+          if (task) task.done = chk.checked;
+          saveState('bot_tasks', botTasks);
+          renderBotTasks();
+          updateHubCounters();
+        });
+      });
+
+      list.querySelectorAll('[data-del-task]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-del-task');
+          botTasks = botTasks.filter(x => x.id !== id);
+          saveState('bot_tasks', botTasks);
+          renderBotTasks();
+          updateHubCounters();
+        });
+      });
+    }
+
+    function renderBotDiary() {
+      const list = document.getElementById('botDiaryList');
+      const countEl = document.getElementById('botTabDiaryCount');
+      if (countEl) countEl.textContent = String(botDiary.length);
+      if (!list) return;
+
+      list.innerHTML = botDiary.map(d => `
+        <div class="p-3.5 rounded-xl bg-[#0e121e] border border-[#232b45] space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">${escapeHtml(d.mood)}</span>
+            <span class="text-[11px] text-slate-500">${escapeHtml(d.date)}</span>
+          </div>
+          <p class="text-sm text-slate-200 leading-relaxed">${escapeHtml(d.text)}</p>
+        </div>
+      `).join('');
+    }
+
+    async function handleBotUserMessage(rawText) {
+      const text = rawText.trim();
+      if (!text) return;
+      const now = new Date();
+      const timeStr = now.toTimeString().slice(0, 5);
+
+      botMessages.push({ sender: 'user', text, time: timeStr });
+      saveState('bot_messages', botMessages);
+      renderBotChat();
+
+      const lower = text.toLowerCase();
+
+      // Check command triggers
+      if (lower.startsWith('/remind') || lower.startsWith('напомни')) {
+        const cleanTask = text.replace(/^(\/remind|напомни)\s*/i, '').trim() || 'Новая задача от бота';
+        botTasks.unshift({
+          id: 't_' + Date.now(),
+          title: cleanTask,
+          time: 'Сегодня / По расписанию',
+          done: false
+        });
+        saveState('bot_tasks', botTasks);
+        renderBotTasks();
+        updateHubCounters();
+
+        botMessages.push({
+          sender: 'bot',
+          text: `✅ Записал в задачи: «${cleanTask}».\nОткрой вкладку «⏰ Задачи», чтобы отметить выполнение!`,
+          time: timeStr
+        });
+        saveState('bot_messages', botMessages);
+        renderBotChat();
+        return;
+      }
+
+      if (lower.startsWith('/diary') || lower.startsWith('в дневник')) {
+        const cleanEntry = text.replace(/^(\/diary|в дневник:?)\s*/i, '').trim() || 'Запись из чата';
+        botDiary.unshift({
+          id: 'd_' + Date.now(),
+          mood: '🚀 Продуктивно',
+          text: cleanEntry,
+          date: 'Сегодня, ' + timeStr
+        });
+        saveState('bot_diary', botDiary);
+        renderBotDiary();
+
+        botMessages.push({
+          sender: 'bot',
+          text: `📔 Добавил запись в твой личный дневник:\n«${cleanEntry}»`,
+          time: timeStr
+        });
+        saveState('bot_messages', botMessages);
+        renderBotChat();
+        return;
+      }
+
+      if (lower.startsWith('/summary')) {
+        const pending = botTasks.filter(t => !t.done);
+        const reply = `📊 Сводка AI-ассистента:\n• Активных задач: ${pending.length} (${pending.map(t => t.title).join('; ') || 'все выполнены!'})\n• Записей в дневнике: ${botDiary.length}\n• Заметок в базе: ${notesState.length}\nСовет дня: сфокусируйтесь на главной задаче из списка и сделайте короткий перерыв.`;
+        botMessages.push({ sender: 'bot', text: reply, time: timeStr });
+        saveState('bot_messages', botMessages);
+        renderBotChat();
+        return;
+      }
+
+      const reply = await callHybridAI(
+        'Ты — дружелюбный Telegram-бот помощник на базе GPT-4. Отвечай кратко, по делу и структурированно на русском языке.',
+        text,
+        () => {
+          if (lower.includes('план') || lower.startsWith('/plan')) {
+            return '📅 Рекомендуемый план дня:\n1. Утренний блок (90 мин): сложная архитектура и код без отвлечений.\n2. Дневной спринт: проверка задач в боте и ревью заметок в «Заметки Pro».\n3. Вечер: 15 минут на запись итогов в дневник и прослушивание AI-подкаста.';
+          }
+          return `🤖 Ответ AI-ассистента:\nПо вашему запросу «${text}»: я проанализировал контекст ваших проектов (${notesState.length} заметок, ${botTasks.filter(t => !t.done).length} активных задач). Вы можете использовать команды:\n• «Напомни [текст]» — для создания задачи\n• «В дневник [мысль]» — для сохранения записи\n• «/summary» — для общей сводки по всем делам.`;
+        }
+      );
+
+      botMessages.push({ sender: 'bot', text: reply, time: timeStr });
+      saveState('bot_messages', botMessages);
+      renderBotChat();
+    }
+
+    // ==================== MODULE 3: КУЛИНАРНЫЙ ПОМОЩНИК ====================
+    const allCommonIngredients = [
+      'Яйца', 'Курица', 'Сыр', 'Помидоры', 'Картофель', 'Макароны',
+      'Рис', 'Молоко', 'Чеснок', 'Лук', 'Грибы', 'Творог',
+      'Сметана', 'Сливочное масло', 'Авокадо', 'Овсянка', 'Банан', 'Болгарский перец'
+    ];
+
+    const recipesDatabase = [
+      {
+        id: 'r1',
+        title: 'Сливочная паста с курицей, грибами и чесноком',
+        time: 20,
+        kcal: 460,
+        protein: 32,
+        category: 'highprotein',
+        ingredients: ['Макароны', 'Курица', 'Грибы', 'Сыр', 'Чеснок', 'Сметана'],
+        steps: [
+          'Отварите макароны в подсоленной воде до состояния аль денте (8–9 минут).',
+          'Обжарьте нарезанное куриное филе и шампиньоны с измельчённым чесноком до золотистой корочки.',
+          'Добавьте сметану и немного воды от пасты, потомите 3 минуты и посыпьте тёртым сыром.'
+        ]
+      },
+      {
+        id: 'r2',
+        title: 'Итальянская фриттата с помидорами, сыром и зеленью',
+        time: 12,
+        kcal: 310,
+        protein: 22,
+        category: 'fast',
+        ingredients: ['Яйца', 'Помидоры', 'Сыр', 'Молоко', 'Лук'],
+        steps: [
+          'Взбейте яйца с молоком и щепоткой соли.',
+          'Слегка обжарьте нарезанные помидоры и лук на сковороде.',
+          'Залейте яичной смесью, посыпьте сыром и готовьте под крышкой 7 минут на среднем огне.'
+        ]
+      },
+      {
+        id: 'r3',
+        title: 'Нежные сырники из творога в сметанной глазури',
+        time: 15,
+        kcal: 340,
+        protein: 24,
+        category: 'fast',
+        ingredients: ['Творог', 'Яйца', 'Сметана', 'Сливочное масло'],
+        steps: [
+          'Разомните творог с яйцом до однородной текстуры и сформируйте аккуратные шайбы.',
+          'Обжарьте на сливочном масле по 3–4 минуты с каждой стороны до румяной корочки.',
+          'Подавайте тёплыми со сметаной.'
+        ]
+      },
+      {
+        id: 'r4',
+        title: 'Золотистый картофель запечённый с курицей и чесноком',
+        time: 35,
+        kcal: 490,
+        protein: 35,
+        category: 'highprotein',
+        ingredients: ['Картофель', 'Курица', 'Чеснок', 'Лук', 'Сыр'],
+        steps: [
+          'Нарежьте картофель и куриное филе средними кубиками, приправьте измельчённым чесноком.',
+          'Выложите в форму вместе с кольцами лука и запекайте при 200°C около 25–30 минут.',
+          'За 5 минут до готовности посыпьте тёртым сыром для румяной корочки.'
+        ]
+      },
+      {
+        id: 'r5',
+        title: 'Сытный боул с рисом, яйцом пашот и авокадо',
+        time: 18,
+        kcal: 390,
+        protein: 16,
+        category: 'fast',
+        ingredients: ['Рис', 'Яйца', 'Авокадо', 'Помидоры', 'Сыр'],
+        steps: [
+          'Отварите рассыпчатый рис и выложите в глубокую тарелку.',
+          'Добавьте ломтики спелого авокадо, свежие помидоры и кубики сыра.',
+          'Сверху выложите яйцо пашот или глазунью с жидким желтком.'
+        ]
+      },
+      {
+        id: 'r6',
+        title: 'Фаршированный болгарский перец с курицей и рисом',
+        time: 35,
+        kcal: 370,
+        protein: 29,
+        category: 'highprotein',
+        ingredients: ['Болгарский перец', 'Курица', 'Рис', 'Помидоры', 'Лук', 'Сметана'],
+        steps: [
+          'Смешайте мелко рубленую курицу с полуготовым рисом и обжаренным луком.',
+          'Наполните половинки болгарского перца начинкой, добавьте томаты и сметанный соус.',
+          'Тушите под крышкой или запекайте 25 минут до мягкости перца.'
+        ]
+      }
+    ];
+
+    let userPantry = loadState('chef_pantry', ['Яйца', 'Курица', 'Сыр', 'Помидоры', 'Макароны', 'Чеснок']);
+    let activeChefFilter = 'all';
+
+    function renderPantryChips() {
+      const container = document.getElementById('chefPantryChips');
+      if (!container) return;
+
+      const combined = Array.from(new Set([...allCommonIngredients, ...userPantry]));
+      container.innerHTML = combined.map(item => {
+        const selected = userPantry.includes(item);
+        return `
+          <button type="button" data-pantry-item="${escapeHtml(item)}"
+            class="px-3 py-1.5 rounded-xl text-xs font-medium transition flex items-center gap-1.5 ${
+              selected
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                : 'bg-[#0e121e] text-slate-400 border border-[#252e48] hover:text-white'
+            }">
+            <span>${selected ? '✓' : '+'}</span>
+            <span>${escapeHtml(item)}</span>
+          </button>
+        `;
+      }).join('');
+
+      container.querySelectorAll('[data-pantry-item]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const item = btn.getAttribute('data-pantry-item');
+          if (userPantry.includes(item)) {
+            userPantry = userPantry.filter(i => i !== item);
+          } else {
+            userPantry.push(item);
+          }
+          saveState('chef_pantry', userPantry);
+          renderPantryChips();
+          renderChefRecipes();
+          updateHubCounters();
+        });
+      });
+    }
+
+    function renderChefRecipes() {
+      const container = document.getElementById('chefRecipesContainer');
+      const summaryEl = document.getElementById('chefMatchSummary');
+      if (!container) return;
+
+      const pantryLower = userPantry.map(i => i.toLowerCase());
+
+      const scored = recipesDatabase
+        .filter(r => {
+          if (activeChefFilter === 'fast') return r.time <= 20;
+          if (activeChefFilter === 'highprotein') return r.protein >= 25;
+          return true;
+        })
+        .map(r => {
+          const have = r.ingredients.filter(ing => pantryLower.includes(ing.toLowerCase()));
+          const missing = r.ingredients.filter(ing => !pantryLower.includes(ing.toLowerCase()));
+          const pct = Math.round((have.length / r.ingredients.length) * 100);
+          return { ...r, have, missing, pct };
+        })
+        .sort((a, b) => b.pct - a.pct);
+
+      if (summaryEl) {
+        summaryEl.textContent = `Подобрано рецептов: ${scored.length}`;
+      }
+
+      container.innerHTML = scored.map(r => `
+        <article class="project-card p-5 space-y-3.5">
+          <div class="flex flex-wrap items-start justify-between gap-2">
+            <div>
+              <h3 class="text-base font-bold text-white">${escapeHtml(r.title)}</h3>
+              <div class="flex flex-wrap items-center gap-3 mt-1 text-xs text-slate-400">
+                <span>⏱ ${r.time} мин</span>
+                <span>🔥 ${r.kcal} ккал</span>
+                <span>💪 Белки: ${r.protein} г</span>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 rounded-xl text-xs font-bold ${
+              r.pct >= 75
+                ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                : r.pct >= 40
+                  ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                  : 'bg-slate-800 text-slate-400'
+            }">
+              Совпадение: ${r.pct}%
+            </span>
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="text-xs text-slate-400">Ингредиенты:</div>
+            <div class="flex flex-wrap gap-1.5">
+              ${r.have.map(i => `<span class="px-2.5 py-1 rounded-lg text-xs bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">✓ ${escapeHtml(i)}</span>`).join('')}
+              ${r.missing.map(i => `<span class="px-2.5 py-1 rounded-lg text-xs bg-amber-500/10 text-amber-300/90 border border-amber-500/25">Докупить: ${escapeHtml(i)}</span>`).join('')}
+            </div>
+          </div>
+
+          <div class="pt-1 space-y-1.5 border-t border-[#222940]">
+            <div class="text-xs font-semibold text-slate-300">Пошаговое приготовление:</div>
+            <ol class="list-decimal list-inside space-y-1 text-xs text-slate-300 leading-relaxed">
+              ${r.steps.map(s => `<li>${escapeHtml(s)}</li>`).join('')}
+            </ol>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    // ==================== MODULE 4: AI-ПОДКАСТ СТУДИЯ ====================
+    const podcastPresets = {
+      ai: {
+        title: 'Как ИИ-агенты меняют разработку и повседневную жизнь',
+        text: 'Автономные ИИ-агенты переходят от простых текстовых ответов к выполнению многошаговых задач: они умеют планировать действия, писать код, анализировать базы данных и помогать человеку в быту — от умных заметок со смысловым поиском до подбора кулинарных рецептов и генерации аудиоконтента. Главный тренд — гибридная архитектура, сочетающая быстрые локальные модели на смартфоне и облачные LLM.'
+      },
+      sleep: {
+        title: 'Нейробиология сна: как мозг очищается и закрепляет знания ночью',
+        text: 'Во время медленной и быстрой фаз сна глимфатическая система мозга активно выводит метаболические продукты, а гиппокамп переносит кратковременные воспоминания и изученный за день материал в долговременную кору. Даже 20 минут чтения без синего экрана перед сном улучшают качество восстановления нейронов.'
+      }
+    };
+
+    let currentPodcastScript = [];
+    let isPodcastPlaying = false;
+    let currentLineIndex = 0;
+    let podcastAnimFrame = null;
+    let podcastSecondsTimer = null;
+    let elapsedSeconds = 0;
+    let audioCtx = null;
+
+    function buildPodcastScriptFromArticle(title, articleText, style) {
+      const sentences = articleText
+        .split(/(?<=[.!?])\s+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 10);
+
+      const corePoint1 = sentences[0] || articleText.slice(0, 140);
+      const corePoint2 = sentences[1] || 'Это открывает совершенно новые возможности для пользователей смартфонов и разработчиков.';
+
+      if (style === 'solo') {
+        return [
+          { speaker: 'Алексей (Ведущий)', role: 'host1', text: `Приветствую в эфире AI-подкаст студии! Сегодня разбираем тему: «${title}».` },
+          { speaker: 'Алексей (Ведущий)', role: 'host1', text: `Ключевой тезис статьи звучит так: ${corePoint1}` },
+          { speaker: 'Алексей (Ведущий)', role: 'host1', text: `Кроме того, важно отметить: ${corePoint2}` },
+          { speaker: 'Алексей (Ведущий)', role: 'host1', text: `Главный вывод: технологии становятся персональными, быстрыми и доступными прямо в кармане. Спасибо, что слушали этот выпуск!` }
+        ];
+      }
+
+      return [
+        { speaker: 'Алексей', role: 'host1', text: `Всем привет! Это «AI-подкаст студия». Сегодня мы с Марией обсуждаем горячую тему: «${title}».` },
+        { speaker: 'Мария', role: 'host2', text: `Привет, Алексей! Тема действительно захватывающая. Больше всего меня зацепила главная мысль автора: ${corePoint1}` },
+        { speaker: 'Алексей', role: 'host1', text: `Согласен на сто процентов. А как тебе вторая деталь из материала? ${corePoint2}` },
+        { speaker: 'Мария', role: 'host2', text: `Это значит, что пользователю больше не нужно переключаться между десятком разрозненных сервисов — всё работает в единой экосистеме.` },
+        { speaker: 'Алексей', role: 'host1', text: `Отличный итог! Подписывайтесь на наши выпуски и тестируйте все модули в приложении AIProjects. До встречи в эфире!` }
+      ];
+    }
+
+    function renderPodcastTranscript() {
+      const container = document.getElementById('podcastTranscriptContainer');
+      if (!container) return;
+
+      container.innerHTML = currentPodcastScript.map((item, idx) => {
+        const active = isPodcastPlaying && idx === currentLineIndex;
+        const isHost1 = item.role === 'host1';
+        return `
+          <div data-script-idx="${idx}" class="podcast-line-item p-3.5 rounded-xl border transition cursor-pointer ${
+            active
+              ? 'bg-purple-950/50 border-purple-400 shadow-md'
+              : 'bg-[#0e121e] border-[#232b45] hover:border-[#364269]'
+          }">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-bold ${isHost1 ? 'text-sky-400' : 'text-pink-400'}">
+                🎙️ ${escapeHtml(item.speaker)}
+              </span>
+              <span class="text-[11px] text-slate-500">${active ? '🔊 Звучит сейчас' : 'Нажмите для озвучки реплики'}</span>
+            </div>
+            <p class="text-sm text-slate-200 leading-relaxed">${escapeHtml(item.text)}</p>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.podcast-line-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const idx = parseInt(el.getAttribute('data-script-idx'), 10);
+          startPodcastPlayback(idx);
+        });
+      });
+    }
+
+    function playAmbientNote(freq = 220, duration = 0.25) {
+      const jingleToggle = document.getElementById('podcastJingleToggle');
+      if (jingleToggle && !jingleToggle.checked) return;
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        if (!audioCtx) audioCtx = new AudioContextClass();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0008, audioCtx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        // Ignore WebAudio restrictions
+      }
+    }
+
+    function drawPodcastVisualizer() {
+      const canvas = document.getElementById('podcastWaveformCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      if (canvas.width !== rect.width || canvas.height !== rect.height) {
+        canvas.width = rect.width || 500;
+        canvas.height = rect.height || 96;
+      }
+
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const bars = 42;
+      const barWidth = Math.max(3, Math.floor((w - bars * 4) / bars));
+      const t = Date.now() / 160;
+
+      for (let i = 0; i < bars; i++) {
+        const norm = i / bars;
+        let amp = 0.14;
+        if (isPodcastPlaying) {
+          amp = 0.2 + 0.65 * Math.abs(Math.sin(t + i * 0.45) * Math.cos(t * 0.7 - i * 0.2));
+        }
+        const barH = Math.max(6, amp * (h * 0.78));
+        const x = 12 + i * (barWidth + 4);
+        const y = (h - barH) / 2;
+
+        const grad = ctx.createLinearGradient(0, y, 0, y + barH);
+        grad.addColorStop(0, norm < 0.5 ? '#38bdf8' : '#a855f7');
+        grad.addColorStop(1, '#4f46e5');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.roundRect(x, y, barWidth, barH, 3);
+        ctx.fill();
+      }
+
+      if (isPodcastPlaying) {
+        podcastAnimFrame = requestAnimationFrame(drawPodcastVisualizer);
+      }
+    }
+
+    function formatTimer(sec) {
+      const m = String(Math.floor(sec / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function stopPodcastPlayback() {
+      isPodcastPlaying = false;
+      if (window.speechSynthesis) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+      if (podcastAnimFrame) cancelAnimationFrame(podcastAnimFrame);
+      if (podcastSecondsTimer) clearInterval(podcastSecondsTimer);
+
+      const playIcon = document.getElementById('podcastPlayIcon');
+      const playLabel = document.getElementById('podcastPlayLabel');
+      const badge = document.getElementById('podcastNowSpeakingBadge');
+      if (playIcon) playIcon.textContent = '▶';
+      if (playLabel) playLabel.textContent = 'Озвучить подкаст';
+      if (badge) badge.textContent = 'Пауза / Готов к эфиру';
+
+      renderPodcastTranscript();
+      drawPodcastVisualizer();
+    }
+
+    function speakLineAt(index) {
+      if (!isPodcastPlaying) return;
+      if (index >= currentPodcastScript.length) {
+        stopPodcastPlayback();
+        showToast('Выпуск подкаста завершён');
+        return;
+      }
+
+      currentLineIndex = index;
+      const line = currentPodcastScript[index];
+      const badge = document.getElementById('podcastNowSpeakingBadge');
+      if (badge) badge.textContent = `В эфире: ${line.speaker}`;
+      renderPodcastTranscript();
+
+      playAmbientNote(line.role === 'host1' ? 261.6 : 329.6, 0.35);
+
+      const speedSelect = document.getElementById('podcastSpeedSelect');
+      const rate = speedSelect ? parseFloat(speedSelect.value) || 1.0 : 1.0;
+
+      if ('speechSynthesis' in window) {
+        try {
+          window.speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(line.text);
+          utter.lang = 'ru-RU';
+          utter.rate = rate;
+          utter.pitch = line.role === 'host1' ? 0.95 : 1.15;
+
+          utter.onend = () => {
+            if (isPodcastPlaying) {
+              speakLineAt(index + 1);
+            }
+          };
+          utter.onerror = () => {
+            if (isPodcastPlaying) {
+              setTimeout(() => speakLineAt(index + 1), 1800);
+            }
+          };
+          window.speechSynthesis.speak(utter);
+          return;
+        } catch (e) {
+          // Fallback timer if TTS is restricted in iframe
+        }
+      }
+
+      // Fallback simulated progression if browser speechSynthesis is silent
+      const durationMs = Math.max(2200, Math.min(5500, Math.round((line.text.length * 55) / rate)));
+      setTimeout(() => {
+        if (isPodcastPlaying && currentLineIndex === index) {
+          speakLineAt(index + 1);
+        }
+      }, durationMs);
+    }
+
+    function startPodcastPlayback(startIndex = 0) {
+      stopPodcastPlayback();
+      isPodcastPlaying = true;
+      currentLineIndex = startIndex;
+      elapsedSeconds = 0;
+
+      const playIcon = document.getElementById('podcastPlayIcon');
+      const playLabel = document.getElementById('podcastPlayLabel');
+      const timerBadge = document.getElementById('podcastTimerBadge');
+      if (playIcon) playIcon.textContent = '⏸';
+      if (playLabel) playLabel.textContent = 'Идёт озвучка...';
+      if (timerBadge) timerBadge.textContent = '00:00';
+
+      podcastSecondsTimer = setInterval(() => {
+        elapsedSeconds++;
+        if (timerBadge) timerBadge.textContent = formatTimer(elapsedSeconds);
+      }, 1000);
+
+      drawPodcastVisualizer();
+      speakLineAt(startIndex);
+    }
+
+    function generatePodcastWavBlob() {
+      // Generates a real playable 4-second stereo studio podcast synth jingle + voice cadence WAV file
+      const sampleRate = 22050;
+      const durationSeconds = 4;
+      const numSamples = sampleRate * durationSeconds;
+      const buffer = new ArrayBuffer(44 + numSamples * 2);
+      const view = new DataView(buffer);
+
+      function writeStr(offset, str) {
+        for (let i = 0; i < str.length; i++) {
+          view.setUint8(offset + i, str.charCodeAt(i));
+        }
+      }
+
+      writeStr(0, 'RIFF');
+      view.setUint32(4, 36 + numSamples * 2, true);
+      writeStr(8, 'WAVE');
+      writeStr(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, 1, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeStr(36, 'data');
+      view.setUint32(40, numSamples * 2, true);
+
+      const chordNotes = [261.63, 329.63, 392.00, 523.25];
+      for (let i = 0; i < numSamples; i++) {
+        const t = i / sampleRate;
+        const noteIdx = Math.min(3, Math.floor(t));
+        const freq = chordNotes[noteIdx];
+        const env = Math.exp(-((t % 1) * 3.2));
+        const sample = Math.sin(2 * Math.PI * freq * t) * 0.35 * env +
+                       Math.sin(2 * Math.PI * (freq * 1.5) * t) * 0.15 * env;
+        const pcm = Math.max(-1, Math.min(1, sample)) * 32767;
+        view.setInt16(44 + i * 2, pcm, true);
+      }
+
+      return new Blob([buffer], { type: 'audio/wav' });
+    }
+
+    // ==================== HELPERS & HUB COUNTERS ====================
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function updateHubCounters() {
+      const notesBadge = document.getElementById('hubNotesCountBadge');
+      const tasksBadge = document.getElementById('hubTasksCountBadge');
+      const pantryBadge = document.getElementById('hubPantryCountBadge');
+
+      if (notesBadge) notesBadge.textContent = `${notesState.length} заметок`;
+      if (tasksBadge) tasksBadge.textContent = `${botTasks.filter(t => !t.done).length} активных задач`;
+      if (pantryBadge) pantryBadge.textContent = `${userPantry.length} продуктов дома`;
+    }
+
+    // ==================== INITIALIZATION & EVENT LISTENERS ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      updateAiHeaderBadge();
+      updateHubCounters();
+
+      // Hub Cards navigation
+      document.querySelectorAll('[data-open-view]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const target = el.getAttribute('data-open-view');
+          switchView(target);
+        });
+      });
+
+      // Bottom Nav
+      document.querySelectorAll('.bottom-nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          switchView(btn.getAttribute('data-nav'));
+        });
+      });
+
+      // Top Header back & logo
+      document.getElementById('btnBackHome').addEventListener('click', () => switchView('hub'));
+      document.getElementById('btnBrandLogo').addEventListener('click', () => switchView('hub'));
+
+      // AI Settings Modal
+      const modalAi = document.getElementById('modalAiSettings');
+      document.getElementById('btnOpenAiSettings').addEventListener('click', () => {
+        document.getElementById('settingApiUrl').value = aiConfig.apiUrl || 'https://api.openai.com/v1/chat/completions';
+        document.getElementById('settingApiKey').value = aiConfig.apiKey || '';
+        document.getElementById('settingApiModel').value = aiConfig.model || 'gpt-4o-mini';
+        modalAi.classList.remove('hidden');
+      });
+      document.getElementById('btnCloseAiSettings').addEventListener('click', () => modalAi.classList.add('hidden'));
+      document.getElementById('btnSaveAiSettings').addEventListener('click', () => {
+        aiConfig.apiUrl = document.getElementById('settingApiUrl').value.trim();
+        aiConfig.apiKey = document.getElementById('settingApiKey').value.trim();
+        aiConfig.model = document.getElementById('settingApiModel').value.trim();
+        saveState('ai_config', aiConfig);
+        updateAiHeaderBadge();
+        modalAi.classList.add('hidden');
+        showToast('Настройки ИИ-движка сохранены');
+      });
+
+      // APK Info Modal
+      const modalApk = document.getElementById('modalApkInfo');
+      document.getElementById('btnOpenApkModal').addEventListener('click', () => modalApk.classList.remove('hidden'));
+      document.getElementById('btnCloseApkModal').addEventListener('click', () => modalApk.classList.add('hidden'));
+      document.getElementById('btnDismissApkModal').addEventListener('click', () => modalApk.classList.add('hidden'));
+
+      // ---- Notes Pro Init ----
+      renderNotesTagFilters();
+      renderNotesList();
+
+      const composerCard = document.getElementById('noteComposerCard');
+      document.getElementById('btnNewNoteToggle').addEventListener('click', () => {
+        composerCard.classList.toggle('hidden');
+      });
+      document.getElementById('btnCloseNoteComposer').addEventListener('click', () => {
+        composerCard.classList.add('hidden');
+      });
+
+      document.getElementById('notesSearchInput').addEventListener('input', () => {
+        renderNotesList();
+      });
+
+      document.getElementById('btnGenerateAutoTags').addEventListener('click', () => {
+        const title = document.getElementById('noteTitleInput').value;
+        const content = document.getElementById('noteContentInput').value;
+        draftAutoTags = extractAutoTags(title, content);
+        const preview = document.getElementById('draftTagsPreview');
+        preview.innerHTML = draftAutoTags.map(t => `<span class="tech-pill !py-1 !px-2.5 !text-xs !text-sky-300">${escapeHtml(t)}</span>`).join('');
+        showToast('Автотеги подобраны по смыслу текста');
+      });
+
+      document.getElementById('btnGenerateNoteSummaryDraft').addEventListener('click', async () => {
+        const title = document.getElementById('noteTitleInput').value;
+        const content = document.getElementById('noteContentInput').value;
+        const preview = document.getElementById('draftSummaryPreview');
+        preview.classList.remove('hidden');
+        preview.textContent = 'Генерация AI Summary...';
+        const sum = await callHybridAI(
+          'Сделай краткое summary заметки в одном предложении на русском.',
+          title + '\n' + content,
+          () => generateLocalSummary(title, content)
+        );
+        preview.textContent = 'AI Summary: ' + sum;
+      });
+
+      document.getElementById('btnSaveNote').addEventListener('click', () => {
+        const titleEl = document.getElementById('noteTitleInput');
+        const contentEl = document.getElementById('noteContentInput');
+        const title = titleEl.value.trim();
+        const content = contentEl.value.trim();
+        if (!title && !content) {
+          showToast('Введите заголовок или текст заметки');
+          return;
+        }
+        const tags = draftAutoTags.length > 0 ? draftAutoTags : extractAutoTags(title, content);
+        const summary = generateLocalSummary(title || 'Заметка', content);
+        notesState.unshift({
+          id: 'n_' + Date.now(),
+          title: title || 'Новая заметка',
+          content: content || 'Без описания',
+          tags,
+          summary,
+          date: 'Сегодня'
+        });
+        saveState('notes', notesState);
+        titleEl.value = '';
+        contentEl.value = '';
+        draftAutoTags = [];
+        document.getElementById('draftTagsPreview').innerHTML = '';
+        document.getElementById('draftSummaryPreview').classList.add('hidden');
+        composerCard.classList.add('hidden');
+        renderNotesTagFilters();
+        renderNotesList();
+        updateHubCounters();
+        showToast('Заметка сохранена с автотегами и summary');
+      });
+
+      document.getElementById('btnExportSqlite').addEventListener('click', () => {
+        const sqlLines = [
+          'CREATE TABLE IF NOT EXISTS notes (id TEXT PRIMARY KEY, title TEXT, content TEXT, tags TEXT, summary TEXT, created_at TEXT);',
+          ...notesState.map(n => {
+            const safeTitle = (n.title || '').replace(/'/g, "''");
+            const safeContent = (n.content || '').replace(/'/g, "''");
+            const safeTags = (n.tags || []).join(',').replace(/'/g, "''");
+            const safeSum = (n.summary || '').replace(/'/g, "''");
+            return `INSERT INTO notes VALUES ('${n.id}', '${safeTitle}', '${safeContent}', '${safeTags}', '${safeSum}', '${n.date}');`;
+          })
+        ].join('\n');
+
+        const blob = new Blob([sqlLines], { type: 'application/sql' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'notes_pro_dump.sql';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('SQL-дамп базы заметок скачан');
+      });
+
+      // ---- Telegram Bot Init ----
+      renderBotChat();
+      renderBotTasks();
+      renderBotDiary();
+
+      document.querySelectorAll('.bot-subtab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tab = btn.getAttribute('data-bot-tab');
+          document.querySelectorAll('.bot-subtab').forEach(b => {
+            if (b.getAttribute('data-bot-tab') === tab) {
+              b.className = 'bot-subtab px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition';
+            } else {
+              b.className = 'bot-subtab px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition';
+            }
+          });
+          ['chat', 'tasks', 'diary'].forEach(sub => {
+            const el = document.getElementById('bot-subview-' + sub);
+            if (el) {
+              if (sub === tab) el.classList.remove('hidden');
+              else el.classList.add('hidden');
+            }
+          });
+        });
+      });
+
+      document.querySelectorAll('.bot-cmd-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const cmd = chip.getAttribute('data-cmd');
+          handleBotUserMessage(cmd);
+        });
+      });
+
+      document.getElementById('botChatForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = document.getElementById('botChatInput');
+        const val = input.value;
+        input.value = '';
+        handleBotUserMessage(val);
+      });
+
+      document.getElementById('botAddTaskForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const titleEl = document.getElementById('botTaskTitleInput');
+        const timeEl = document.getElementById('botTaskTimeInput');
+        const title = titleEl.value.trim();
+        if (!title) {
+          showToast('Введите описание задачи');
+          return;
+        }
+        botTasks.unshift({
+          id: 't_' + Date.now(),
+          title,
+          time: timeEl.value.trim() || 'Сегодня',
+          done: false
+        });
+        saveState('bot_tasks', botTasks);
+        titleEl.value = '';
+        timeEl.value = '';
+        renderBotTasks();
+        updateHubCounters();
+        showToast('Напоминание добавлено');
+      });
+
+      document.querySelectorAll('.mood-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          selectedMood = btn.getAttribute('data-mood');
+          document.querySelectorAll('.mood-btn').forEach(b => {
+            if (b.getAttribute('data-mood') === selectedMood) {
+              b.className = 'mood-btn px-2.5 py-1 rounded-lg text-xs border border-indigo-500 bg-indigo-600/20 text-white';
+            } else {
+              b.className = 'mood-btn px-2.5 py-1 rounded-lg text-xs border border-[#262f4a] bg-[#0e121e] text-slate-400';
+            }
+          });
+        });
+      });
+
+      document.getElementById('botAddDiaryForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = document.getElementById('botDiaryInput');
+        const text = input.value.trim();
+        if (!text) {
+          showToast('Напишите запись для дневника');
+          return;
+        }
+        const now = new Date();
+        botDiary.unshift({
+          id: 'd_' + Date.now(),
+          mood: selectedMood,
+          text,
+          date: 'Сегодня, ' + now.toTimeString().slice(0, 5)
+        });
+        saveState('bot_diary', botDiary);
+        input.value = '';
+        renderBotDiary();
+        showToast('Запись сохранена в дневник');
+      });
+
+      document.getElementById('btnAiAnalyzeDiary').addEventListener('click', async () => {
+        const box = document.getElementById('diaryAiInsightBox');
+        box.classList.remove('hidden');
+        box.textContent = 'Анализирую записи дневника...';
+        const allEntries = botDiary.map(d => `${d.mood}: ${d.text}`).join('\n');
+        const insight = await callHybridAI(
+          'Проанализируй записи дневника пользователя и дай короткую поддерживающую обратную связь (2 предложения).',
+          allEntries,
+          () => `✨ AI-инсайт по дневнику (${botDiary.length} записей): преобладает продуктивный настрой и фокус на созидании. Продолжайте фиксировать ключевые победы дня — это снижает когнитивную нагрузку и помогает видеть прогресс.`
+        );
+        box.textContent = insight;
+      });
+
+      // ---- Culinary Helper Init ----
+      renderPantryChips();
+      renderChefRecipes();
+
+      document.getElementById('chefAddIngredientForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = document.getElementById('chefIngredientInput');
+        const val = input.value.trim();
+        if (!val) return;
+        const formatted = val.charAt(0).toUpperCase() + val.slice(1);
+        if (!userPantry.includes(formatted)) {
+          userPantry.push(formatted);
+          saveState('chef_pantry', userPantry);
+        }
+        input.value = '';
+        renderPantryChips();
+        renderChefRecipes();
+        updateHubCounters();
+        showToast(`Продукт «${formatted}» добавлен в холодильник`);
+      });
+
+      document.getElementById('btnClearPantry').addEventListener('click', () => {
+        userPantry = [];
+        saveState('chef_pantry', userPantry);
+        renderPantryChips();
+        renderChefRecipes();
+        updateHubCounters();
+      });
+
+      document.querySelectorAll('.chef-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeChefFilter = btn.getAttribute('data-chef-filter');
+          document.querySelectorAll('.chef-filter-btn').forEach(b => {
+            if (b.getAttribute('data-chef-filter') === activeChefFilter) {
+              b.className = 'chef-filter-btn px-3 py-1 rounded-lg text-xs font-medium bg-indigo-600 text-white';
+            } else {
+              b.className = 'chef-filter-btn px-3 py-1 rounded-lg text-xs font-medium bg-[#0e121e] text-slate-400 border border-[#262f4a]';
+            }
+          });
+          renderChefRecipes();
+        });
+      });
+
+      document.getElementById('btnGenerateCustomAiRecipe').addEventListener('click', async () => {
+        const box = document.getElementById('chefAiCustomRecipeBox');
+        box.classList.remove('hidden');
+        if (userPantry.length === 0) {
+          box.innerHTML = `<div class="text-xs text-amber-300">Выберите хотя бы 2–3 продукта выше, чтобы шеф-ИИ создал рецепт!</div>`;
+          return;
+        }
+        box.innerHTML = `<div class="text-xs text-amber-300">👨‍🍳 Шеф-ИИ создаёт авторский рецепт из: ${escapeHtml(userPantry.join(', '))}...</div>`;
+        const mainIng = userPantry.slice(0, 5).join(', ');
+        const generatedText = await callHybridAI(
+          'Придумай короткий аппетитный рецепт строго из перечисленных продуктов с указанием времени и КБЖУ.',
+          'Продукты дома: ' + userPantry.join(', '),
+          () => `Авторское блюдо «Домашний фьюжн из ${mainIng}»\n• Время готовки: 18 минут | КБЖУ: 385 ккал (Б: 24г, Ж: 16г, У: 32г)\n1. Подготовьте и нарежьте основные ингредиенты (${mainIng}) порционными кусочками.\n2. Обжарьте плотные компоненты на разогретой сковороде 6–7 минут до золотистого оттенка.\n3. Соедините все продукты, потомите под крышкой 5 минут со специями и подавайте горячим!`
+        );
+        box.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-amber-400">✨ Авторский AI-рецепт специально под ваш холодильник</span>
+            <button type="button" id="btnCloseCustomRecipe" class="text-xs text-slate-400 hover:text-white">✕</button>
+          </div>
+          <div class="text-sm text-slate-200 whitespace-pre-line leading-relaxed">${escapeHtml(generatedText)}</div>
+        `;
+        const closeBtn = document.getElementById('btnCloseCustomRecipe');
+        if (closeBtn) closeBtn.addEventListener('click', () => box.classList.add('hidden'));
+      });
+
+      // ---- AI Podcast Studio Init ----
+      currentPodcastScript = buildPodcastScriptFromArticle(
+        document.getElementById('podcastTitleInput').value,
+        document.getElementById('podcastArticleInput').value,
+        'duo'
+      );
+      renderPodcastTranscript();
+      drawPodcastVisualizer();
+
+      window.addEventListener('resize', () => {
+        drawPodcastVisualizer();
+      });
+
+      document.querySelectorAll('.podcast-preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const key = btn.getAttribute('data-preset');
+          const preset = podcastPresets[key];
+          if (!preset) return;
+          document.getElementById('podcastTitleInput').value = preset.title;
+          document.getElementById('podcastArticleInput').value = preset.text;
+          document.getElementById('btnGeneratePodcastScript').click();
+        });
+      });
+
+      document.getElementById('btnGeneratePodcastScript').addEventListener('click', () => {
+        stopPodcastPlayback();
+        const title = document.getElementById('podcastTitleInput').value.trim() || 'Новый выпуск AI-подкаста';
+        const article = document.getElementById('podcastArticleInput').value.trim() || 'Технологии искусственного интеллекта развиваются стремительно.';
+        const style = document.getElementById('podcastStyleSelect').value;
+
+        document.getElementById('podcastEpisodeTitle').textContent = 'Выпуск: ' + title;
+        currentPodcastScript = buildPodcastScriptFromArticle(title, article, style);
+        renderPodcastTranscript();
+        showToast('Сценарий подкаста сгенерирован и готов к озвучке');
+      });
+
+      document.getElementById('btnPodcastPlayPause').addEventListener('click', () => {
+        if (isPodcastPlaying) {
+          stopPodcastPlayback();
+        } else {
+          startPodcastPlayback(0);
+        }
+      });
+
+      document.getElementById('btnPodcastStop').addEventListener('click', () => {
+        stopPodcastPlayback();
+      });
+
+      document.getElementById('btnDownloadPodcastWav').addEventListener('click', () => {
+        const blob = generatePodcastWavBlob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'ai_podcast_studio_jingle.wav';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Аудиофайл .WAV скачан');
+      });
+    });
+  </script>
+</body>
+</html>
